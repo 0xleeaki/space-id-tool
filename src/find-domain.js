@@ -10,9 +10,9 @@ const CONTRACT = "0x6d910edfed06d7fa12df252693622920fef7eaa6";
 
 const MULTICALL = "0x41263cBA59EB80dC200F3E2544eda4ed6A90E76C";
 
-const a = (s, e) => [...Array(e - s).keys()].map((c) => s + c);
+export const generateNumber = (s, e) => [...Array(e - s).keys()].map((c) => s + c);
 
-const makeid = (length) => {
+export const randomId = (length) => {
   var result = "";
   var characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -23,18 +23,15 @@ const makeid = (length) => {
   return result;
 };
 
-const start = 78000;
+const START_NUMBER = 1000;
 
-const end = 79999;
+const END_NUMBER = 2000;
 
-const getValidDomain = async (provider) => {
-  const numbers = a(start, end);
+const main = async () => {
+  const provider = new JsonRpcProvider(RPC);
+  const numbers = generateNumber(START_NUMBER, END_NUMBER);
 
-  // const domains = numbers.map((item) => makeid(3).toString());
-
-  const domains = numbers.map((item) => item.toString());
-
-  console.log("domains", domains);
+  const domains = numbers.map(() => randomId(3).toString());
 
   const calls = domains.map((domain) => {
     return {
@@ -52,21 +49,16 @@ const getValidDomain = async (provider) => {
     }
   });
 
-  console.log(`Find space id domain from ${start} to ${end} number`);
+  console.log(`Find space id domain from ${START_NUMBER} to ${END_NUMBER} number`);
 
   console.log("Result", validDomains.length);
 
   if (validDomains.length) {
     await fs.writeFile(
-      `./output/${start}-${end}.json`,
+      `./output/${START_NUMBER}-${END_NUMBER}.json`,
       JSON.stringify(validDomains, null, 2)
     );
   }
-};
-
-const main = async () => {
-  const provider = new JsonRpcProvider(RPC);
-  await getValidDomain(provider);
 };
 
 main().catch((error) => {
